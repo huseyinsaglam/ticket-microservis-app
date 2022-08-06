@@ -25,9 +25,9 @@
 
 	<!-- projedeki moduller -->
 	<modules>
-		<module>account-service</module>
 		<module>service-parent</module>
 		<module>config-server</module>
+		<module>account-services</module>
 	</modules>
 
 	<!-- ana root dependency -->
