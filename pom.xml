@@ -25,7 +25,6 @@
 
 	<!-- projedeki moduller -->
 	<modules>
-		<module>account-services</module>
 		<module>service-parent</module>
 		<module>config-server</module>
 		<module>account-services</module>
