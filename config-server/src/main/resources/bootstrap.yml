@@ -1,0 +1,17 @@
+server:
+  port: 8888
+
+spring:
+  cloud:
+    config:
+      server:
+        composite:
+          type: composite
+        native:
+          search-locations: classpath:/config-repo
+
+  profiles:
+    active: native
+
+# classpath demek bir ust dizin yani resources demekdir
+
