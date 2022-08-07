@@ -8,3 +8,6 @@ spcloud:
 
     username: cassandra
     password: cassandra
+
+server:
+  port: 8501
