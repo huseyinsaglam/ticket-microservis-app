@@ -1,37 +1,59 @@
 package com.accountservices.accountservices.service;
 
+import com.accountservices.accountservices.dto.AccountDto;
 import com.accountservices.accountservices.entity.Account;
 import com.accountservices.accountservices.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.List;
+import java.awt.print.Pageable;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final ModelMapper modelMapper;
 
-    public Account get(String id) {
-        return accountRepository.findById(id).orElseThrow(()-> new IllegalArgumentException());
+    public AccountDto get(String id) {
+
+        Account account = accountRepository.findById(id).orElseThrow(()-> new IllegalArgumentException());
+        return modelMapper.map(account, AccountDto.class);
+
     }
 
-    public Account save(Account account) {
-        return accountRepository.save(account);
+    @Transactional
+    public AccountDto save(AccountDto accountDto) {
+        Account account = modelMapper.map(accountDto, Account.class);
+        accountDto.setId(account.getId());
+        return accountDto;
     }
-
-    public Account update(String id, Account account) {
+    @Transactional
+    public AccountDto update(String id, AccountDto accountDto) {
         Assert.isNull(id, "Id cannot be null");
-        return accountRepository.save(account);
+        Optional<Account> account = accountRepository.findById(id);
+        Account accountToUpdate = account.map(it -> {
+            it.setBirthDate(accountDto.getBirthDate());
+            it.setName(accountDto.getName());
+            it.setSurname(accountDto.getSurname());
+            return it;
+        }).orElseThrow(IllegalArgumentException::new);
+        return modelMapper.map(accountRepository.save(accountToUpdate), AccountDto.class);
     }
 
+    @Transactional
     public void delete(String id) {
-
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException());
+        accountRepository.delete(account);
     }
 
-    public List<Account> findAll() {
-        return accountRepository.findAll();
+    public Slice<AccountDto> findAll(Pageable pageable) {
+        return null;
     }
 }
