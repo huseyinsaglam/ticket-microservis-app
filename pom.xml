@@ -29,7 +29,8 @@
 		<module>config-server</module>
 		<module>account-services</module>
 		<module>eureka-server</module>
-	</modules>
+        <module>ticket-service</module>
+    </modules>
 
 	<!-- ana root dependency -->
 	<dependencyManagement>
