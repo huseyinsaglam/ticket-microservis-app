@@ -11,7 +11,7 @@ public class TicketServiceImpl implements TicketService{
     }
 
     @Override
-    public TicketDto update(TicketDto ticketDto) {
+    public TicketDto update(String id, TicketDto ticketDto) {
         return null;
     }
 

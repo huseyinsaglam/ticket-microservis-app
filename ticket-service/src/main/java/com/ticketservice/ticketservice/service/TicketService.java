@@ -8,7 +8,8 @@ public interface TicketService {
 
     TicketDto save(TicketDto ticketDto);
 
-    TicketDto update(TicketDto ticketDto);
+    TicketDto update(String id, TicketDto ticketDto);
+
 
     TicketDto getById(String ticketId);
 
