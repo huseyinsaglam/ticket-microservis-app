@@ -1,5 +1,7 @@
 package com.ticketservice.ticketservice.service;
 
+import com.servicecommon.servicecommon.client.AccountServiceClient;
+import com.servicecommon.servicecommon.contract.AccountDto;
 import com.ticketservice.ticketservice.dto.TicketDto;
 import com.ticketservice.ticketservice.entity.PriorityType;
 import com.ticketservice.ticketservice.entity.Ticket;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,7 @@ public class TicketServiceImpl implements TicketService{
     private final TicketElasticRepository ticketElasticRepository;
     private final TicketRepository ticketRepository;
     private final ModelMapper modelMapper;
+    private final AccountServiceClient accountServiceClient;
 
     @Override
     @Transactional
@@ -31,11 +35,14 @@ public class TicketServiceImpl implements TicketService{
 
         Ticket ticket = new Ticket();
 
+        ResponseEntity<AccountDto> accountDtoResponseEntity= accountServiceClient.get(ticket.getAssignee());
         ticket.setDescription(ticketDto.getDescription());
         ticket.setNotes(ticketDto.getNotes());
         ticket.setTicketDate(ticketDto.getTicketDate());
         ticket.setTicketStatus(TicketStatus.valueOf(ticketDto.getTicketStatus()));
         ticket.setPriorityType(PriorityType.valueOf(ticketDto.getPriorityType()));
+        ticket.setAssignee(accountDtoResponseEntity.getBody().getId());
+
 
         // mysql kaydet
         ticket = ticketRepository.save(ticket);
@@ -48,6 +55,7 @@ public class TicketServiceImpl implements TicketService{
                 .id(ticket.getId())
                 .priorityType(ticket.getPriorityType().getLabel())
                 .ticketStatus(ticket.getTicketStatus().getLabel())
+                .assignee(accountDtoResponseEntity.getBody().getNameSurname())
                 .ticketDate(ticket.getTicketDate()).build();
 
         // elastic kaydet

@@ -30,6 +30,7 @@
 		<module>account-services</module>
 		<module>eureka-server</module>
         <module>ticket-service</module>
+        <module>service-common</module>
     </modules>
 
 	<!-- ana root dependency -->

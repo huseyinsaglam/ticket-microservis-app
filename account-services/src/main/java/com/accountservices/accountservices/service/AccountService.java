@@ -1,8 +1,8 @@
 package com.accountservices.accountservices.service;
 
-import com.accountservices.accountservices.dto.AccountDto;
 import com.accountservices.accountservices.entity.Account;
 import com.accountservices.accountservices.repository.AccountRepository;
+import com.servicecommon.servicecommon.contract.AccountDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Slice;
