@@ -1,15 +1,13 @@
 package com.accountservices.accountservices.api;
 
-import com.accountservices.accountservices.dto.AccountDto;
-import com.accountservices.accountservices.entity.Account;
 import com.accountservices.accountservices.service.AccountService;
+import com.servicecommon.servicecommon.contract.AccountDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Pageable;
-import java.util.List;
 
 @RestController
 @RequestMapping("account")
