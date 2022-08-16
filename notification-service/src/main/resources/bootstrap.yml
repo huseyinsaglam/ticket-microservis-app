@@ -5,7 +5,7 @@ spring:
       profile: native
     stream:
       bindings:
-        input:
+        output:
           destination: msqueue
   application:
-    name: ticket-service
+    name: notification-service
