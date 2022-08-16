@@ -30,6 +30,7 @@ public class AccountService {
     @Transactional
     public AccountDto save(AccountDto accountDto) {
         Account account = modelMapper.map(accountDto, Account.class);
+        account = accountRepository.save(account);
         accountDto.setId(account.getId());
         return accountDto;
     }

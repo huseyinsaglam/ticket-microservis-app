@@ -15,3 +15,16 @@ CREATE TABLE emp(
 );
 
 select * from emp;
+
+create table accounts
+(
+    id text primary key,
+    uname text,
+    name text,
+    surname text,
+    email text,
+    birth_date timestamp,
+    pwd text,
+    created_at timestamp,
+    is_active boolean,
+);
