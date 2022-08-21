@@ -1,0 +1,60 @@
+# dokumantasyon incelenebilir => https://cloud.spring.io/spring-cloud-gateway/reference/html/
+# hem kod olarak hemde konfigurasyon olarak yapılabilir.
+# kod olarak yapilirsa dinamik olarak avantaj saglar ama gelistirme olarak yogun efor harcanir. Cunku db kaydedilebilir oradan cekilip
+# sonrasinda yonetimi saglanabilir
+
+server:
+  port: 8088
+
+# application yml id  ismi verdim
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: account-service         # her servisin id sini verdim. package ismi ile map ettim
+          uri: lb://ACCOUNT-SERVICE   # eureka servis ismi load-balancer
+          predicates:
+            - Path=/account/**      # /account ile baslayan isteklerin hepsini "id: account-service" kismi ilgilendiriyor. Bu servis istekleri uri: lb://ACCOUNT-SERVICE bak diyorum
+          filters:
+            - RewritePath=/(?<segment>.*), /$\{segment}  # router kismi hic degistirme yapmadan yonlendirme yap demek istedim
+            - name: Hystrix  # filter ismi
+              args:
+                name: account-service # Hystrix uzerinde account-service gelen istekler hata durumunda asagidaki url git diyorum
+                fallbackUri: forward:/feedback/account      # herhangi bir hata aldıgımda bu adresi git
+
+        - id: ticket-service
+          uri: lb://TICKET-SERVICE
+          predicates:
+            - Path=/ticket/**
+          filters:
+            - RewritePath=/(?<segment>.*), /$\{segment}
+            - name: Hystrix
+              args:
+                name: ticket-service
+                fallbackUri: forward:/feedback/ticket
+
+# eureka adresi tanimlama yapiyorum eureka ile butun servislerimi cozumlemesini yapiyorum
+# load balancer ve servis katalogunu cekme yapiyorum
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8500/eureka/
+    register-with-eureka: false
+  instance:
+    preferIpAddress: true
+
+# hystrix durumlarını misal servis hata durumlarını bilgilerini disariya yayinlama yaparken kim isterse ona istatistik durumlarini verebilirsin diyorum
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+# depencies olarak
+# 1- hystrix
+# 2- eureka client
+# 3- web
+# 4- api gateway eklenmesi gerekir
