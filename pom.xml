@@ -33,7 +33,8 @@
         <module>service-common</module>
         <module>notification-service</module>
         <module>zipkin-server</module>
-    </modules>
+		<module>hystrix-dashboard</module>
+	</modules>
 
 	<!-- ana root dependency -->
 	<dependencyManagement>
