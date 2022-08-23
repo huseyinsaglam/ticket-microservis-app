@@ -12,6 +12,17 @@ spcloud:
 server:
   port: 8501
 
+  boot:
+    admin:
+      client:
+        url: http://localhost:8508
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 spring:
   application:
     name: account-service

@@ -35,7 +35,8 @@
         <module>zipkin-server</module>
 		<module>hystrix-dashboard</module>
 		<module>gateway-server</module>
-	</modules>
+        <module>admin-server</module>
+    </modules>
 
 	<!-- ana root dependency -->
 	<dependencyManagement>
