@@ -1,6 +1,17 @@
 server:
   port: 8500
 
+  boot:
+    admin:
+      client:
+        url: http://localhost:8508
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 spring:
   application:
     name: eureka-server
