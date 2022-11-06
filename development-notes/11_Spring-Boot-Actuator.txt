@@ -1,0 +1,33 @@
+Actuator
+Spring boot disariya cikardıgı çalisan instance ile ilgili metriklerdir.
+Gateway, health-path, logger-name gibi adreslerin metriklerini gorebiliyoruz
+Varsayılan olarak actuator altında /health ve /info servis uçları yer almaktadır.
+
+1- Bagımliligini
+
+dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+sekilde ekleme yapabilirsiniz
+
+2- Uygulamamızı çalıştırdıktan sonra actuator servis ucuna aşağıdaki şekilde erişebiliriz.
+http://localhost:8080/actuator
+Not :  ugulamanin_ayaga_kalktigi_ortam/actuator adresi ile uygulamanin metriklerine erisim saglanabilir
+
+Prometheus
+Burdaki metriklere ilaveten kendimiz de başka metrikler ekleyip, bunların izlenmesini sağlayabiliriz. 
+Metriklere ait verileri Grafana üzerinden izleyebilmek için öncelikle verileri time series bir veritabanı izleme aracı olan Prometheus’a aktarmamız gerekiyor.
+
+1- Bagımliligini
+
+ <dependency>
+     <groupId>io.micrometer</groupId>
+     <artifactId>micrometer-registry-prometheus</artifactId>
+  </dependency>
+  
+  sekilde ekleme yapabilirsiniz
+  
+2- http://localhost:8080/actuator/prometheus
+Not :  ugulamanin_ayaga_kalktigi_ortam/actuator/prometheus adresi ile uygulamanin prometheus erisim saglanabilir

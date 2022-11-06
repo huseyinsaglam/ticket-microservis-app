@@ -1,0 +1,37 @@
+Eureka Server Nedir?
+
+Eureka Server, tüm servis-client uygulamaları hakkındaki bilgileri tutan bir uygulamadır. 
+Her MikroServis, Eureka sunucusuna kaydolur ve Eureka sunucusu, her bir bağlantı noktasında ve IP adresinde çalışan tüm client uygulamalarını bilir. 
+Eureka Server, Discovery Server olarak da bilinir.
+
+Her modul eura server register olur ve burada servislerin bilgileri tutulur. Hangi modul hangi servis ip/port bilgilerini eura-server uzerinden alır.
+
+1- Ana Spring Boot Application class dosyasında @EnableEurekaServer anotosyonu eklememiz gerekiyor.
+ @EnableEurekaServer anotosyonu, Spring Boot uygulamanızın bir Eureka Sunucusu gibi davranmasını sağlamak için kullanılır.
+ 
+2- @EnableEurekaServer anatasyonunun saglayan maven depencency asagidadir.
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-netflix-eureka-server</artifactId>
+        </dependency>
+		
+3- eureka register olan moduller ise asagidaki maven depencency eklemesi gerekmektedir.
+
+       <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+		
+4- Yerleşik Eureka client ına , uygulamamız bir server olarak hareket etmesi gerektiği için kendisiyle kaydolmamasını söylüyoruz. Asagıdaki tanimlama ile
+
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+	
+5- Server ların modullerin kayıt defterini nerede bulması gerektiğini söylemeliyiz asagidaki tanimlama ile
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8500/eureka/

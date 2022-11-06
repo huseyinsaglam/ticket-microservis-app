@@ -1,0 +1,131 @@
+Spring Boot Actuator Endpoint kullanarak uygulamanızı izlemek biraz zordur. 
+Çünkü 'n' sayıda uygulamanız varsa, her uygulamanın ayrı Actuator uç noktaları vardır, bu da izlemeyi zorlaştırır. 
+Spring Boot Admin Server, Microservice uygulamanızı yönetmek ve izlemek için kullanılan bir uygulamadır.
+
+CodeCentric Team, bu tür durumları ele almak için tüm Spring Boot uygulama Actuator uç noktalarınızı
+ tek bir yerden yönetmek ve izlemek için bir Spring Boot Yönetici Kullanıcı Arayüzü sağlar.
+
+1- Maven bagımlılık için
+
+<dependency>
+   <groupId>de.codecentric</groupId>
+   <artifactId>spring-boot-admin-server</artifactId>
+   <version>1.5.5</version>
+</dependency>
+<dependency>
+   <groupId>de.codecentric</groupId>
+   <artifactId>spring-boot-admin-server-ui</artifactId>
+   <version>1.5.5</version>
+</dependency>
+
+2- Main Aplication için
+@SpringBootApplication
+@EnableAdminServer				// admin server yetenegi kazandırdı
+public class AdminserverApplication {   
+   public static void main(String[] args) {
+      SpringApplication.run(AdminserverApplication.class, args);
+   }
+}
+
+3- konf için
+
+server:
+   port: 9090
+spring:
+   application:
+      name: adminserver
+
+4- Microservis uygulamalarını servislerinin bilgilerini almak için ise
+eureka kullanmamız gerekir.
+
+1- maven için
+
+// admin server için
+   <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-server</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+// uygulamayı web ozelligi kazandırıp run icin
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+// eureka servis bilgileri icin
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+
+2- Main Aplication için
+@SpringBootApplication
+@EnableDiscoveryClient				// eureka kayıt olmak icin
+@EnableAdminServer
+public class AdminServerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(AdminServerApplication.class, args);
+    }
+}
+
+
+3- yml konf için
+
+// eureka servis lerin alacagı ve kac ms icerisinde getirip yenilemesi icin
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    health-check-url-path: /actuator/health
+    metadata-map:
+      startup: ${random.int}
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVICE_URL:http://localhost:8500}/eureka/
+// uygulamaya bütün pathlarden gelen herkes gorsun denilmis
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+===================================================================
+admin server client
+
+
+
+Spring Boot Admin Server aracılığıyla mikroservis uygulamanızı izlemek ve yönetmek için 
+Spring Boot Admin başlangıç ​​istemci bağımlılığını eklemeli ve Admin Server URI'sini uygulama özellikleri
+ dosyasına göstermelisiniz.
+
+Burada admin server arayuzüne hangi servis bilgilerini daha detaylı görmek istiyorsak client olmamız gerekiyor.
+
+1- maven icin hangi modulun client olmasını istiyorsak ona eklemeliyiz
+
+<!-- admin server client icin -->
+        <dependency>
+            <groupId>de.codecentric</groupId>
+            <artifactId>spring-boot-admin-starter-client</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+
+2- konf için hangi modulun client olmasını istiyorsak ona eklemeliyiz
+
+server:
+  boot:
+    admin:
+      client:
+        url: http://localhost:8508			// admin server modulun url verilir
+
+// tüm herkes ui inceleme yapabilir
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+===================================================================
+

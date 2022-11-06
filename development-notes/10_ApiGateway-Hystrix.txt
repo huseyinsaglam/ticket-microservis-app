@@ -1,0 +1,135 @@
+API Gateway
+Bütün servislerin tek bir servis olarak açılmasını saglama yapacagız.
+Bütün servisler euraka üzerinden gidilir ama mimari olarak auth ve session gibi filtrelemeler euraka katman üzerinden yapılmaz.
+Api Gateway katmanı üzerinden yapılır.
+Yaygın kullanılan 20 ye yakın gateway vardır. (AWS, Google tarafından kullanılan, Spring framework kullandıgı framework , kong framework)
+Not : ilk once eureka register olmak gerekiyor istekler ile ondan sonra istekler yapabiliyoruz.
+
+
+1- # dokumantasyon incelenebilir => https://cloud.spring.io/spring-cloud-gateway/reference/html/
+2- Bagımlılık icin
+
+# depencies olarak
+# 1- hystrix => Hystrix, aranan kişide bir sorun olduğunu belirlediğinde, çağırmak istediğimiz yöntemi belirtebiliriz.
+# 2- eureka client => Servis lerin cozumleme yeri
+# 3- web => uygulama baslatma
+# 4- api gateway eklenmesi gerekir => tek sunucu olarak servisi yonlendirme
+
+  <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        </dependency>
+    </dependencies>
+	
+3- 
+
+
+@EnableHystrix   // Bu açıklama paketlerimizi tarar ve @HystrixCommand açıklamasını kullanan yöntemleri arar.
+@SpringBootApplication
+public class GatewayApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(GatewayApplication.class, args);
+    }
+}
+
+
+4- application.yml gateway ile konfigurasyon yapılıyor. Bunu kodlama yontemi ile de yapılır.
+
+---------------------------------------application.yml/ Konfigurasyon aciklama ---------------------------------------
+# dokumantasyon incelenebilir => https://cloud.spring.io/spring-cloud-gateway/reference/html/
+# hem kod olarak hemde konfigurasyon olarak yapılabilir.
+# kod olarak yapilirsa dinamik olarak avantaj saglar ama gelistirme olarak yogun efor harcanir. Cunku db kaydedilebilir oradan cekilip
+# sonrasinda yonetimi saglanabilir
+
+server:
+  port: 8088
+
+# application yml id  ismi verdim
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: account-service         # her servisin id sini verdim. package ismi ile map ettim
+          uri: lb://ACCOUNT-SERVICE   # eureka servis ismi load-balancer
+          predicates:
+            - Path=/account/**      # /account ile baslayan isteklerin hepsini "id: account-service" kismi ilgilendiriyor. Bu servis istekleri uri: lb://ACCOUNT-SERVICE bak diyorum
+          filters:
+            - RewritePath=/(?<segment>.*), /$\{segment}  # router kismi hic degistirme yapmadan yonlendirme yap demek istedim
+            - name: Hystrix  # filter ismi
+              args:
+                name: account-service # Hystrix uzerinde account-service gelen istekler hata durumunda asagidaki url git diyorum
+                fallbackUri: forward:/feedback/account      # herhangi bir hata aldıgımda bu adresi git
+
+        - id: ticket-service
+          uri: lb://TICKET-SERVICE
+          predicates:
+            - Path=/ticket/**
+          filters:
+            - RewritePath=/(?<segment>.*), /$\{segment}
+            - name: Hystrix
+              args:
+                name: ticket-service
+                fallbackUri: forward:/feedback/ticket
+
+# eureka adresi tanimlama yapiyorum eureka ile butun servislerimi cozumlemesini yapiyorum
+# load balancer ve servis katalogunu cekme yapiyorum
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8500/eureka/
+    register-with-eureka: false
+  instance:
+    preferIpAddress: true
+
+# hystrix durumlarını misal servis hata durumlarını bilgilerini disariya yayinlama yaparken kim isterse ona istatistik durumlarini verebilirsin diyorum
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+
+
+
+Hystrix
+Hataları durumları isteklerin durumlarını takip etmemizi saglayan basit bir dashboard /arayuzdur dır.
+localhost://8088/actuator ile servislerin metriklerini gorebiliriz
+
+1- bagımlılıgı icin
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
+        </dependency>
+		
+2- 
+
+@SpringBootApplication
+@EnableHystrixDashboard					// uygulamaya hystrix ozelligi kazandırmak icin kullanilir
+public class HystrixDashboardApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(HystrixDashboardApplication.class, args);
+    }
+
+}
+

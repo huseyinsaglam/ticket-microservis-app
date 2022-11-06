@@ -1,0 +1,12 @@
+1- account-service
+2- eureka server						
+3- config-server												
+4- service parent											
+5- service-common/ feign client					
+6- notificate server									
+
+7-zipkin server												
+8- hystrix-dashboard
+9- gateway server
+10- ticket service
+11- admin server
