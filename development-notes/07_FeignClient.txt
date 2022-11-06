@@ -1,0 +1,58 @@
+Feign Client
+
+- Servisler arası iletişimi saglar.
+- İletişim synchronously(eşzamanlı) veya asynchronously(eşzamansız) olarak gerçekleşebilir.
+- Netflix Feign ve Spring RestTemplate ( Ribbon ile birlikte ), senkronize API çağrıları yapmak için kullanılan iyi bilinen iki HTTP istemcisidir. 
+Bu eğitimde Feign Client kullanacağız .
+
+1- İlk olarak, hizmetin pom.xml'sini aşağıdaki bağımlılıkla güncelleyelim
+
+<dependencies>
+   <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-feign</artifactId>
+            <version>1.4.6.RELEASE</version>
+        </dependency>
+      <dependency>
+         <groupId>org.springframework.cloud</groupId>
+         <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-web</artifactId>
+      </dependency>
+</dependencies>
+
+2- Ardından, SpringApplication uygulamamıza sınıfımıza @EnableDiscoveryClient ve @EnableFeignCLient anatasyonu eklemek gerekir.
+
+
+@SpringBootApplication
+@EnableFeignClients => Bu annotation ile , kodumuzdaki etkinleştirilmiş  feign client  için paketlerimizi tarar ve buna göre başlatır.
+@EnableDiscoveryClient =>  Bu, Eureka sunucusuna okumak/yazmak için kullanıyoruz
+public class RestaurantService{
+   public static void main(String[] args) {
+      SpringApplication.run(RestaurantService.class, args);
+   }
+}
+
+yada Configuration yaparak feign client kullanılır
+@Configuration
+@EnableFeignClients
+public class FeignConfig {
+}
+
+3- Feign client API çağrılarını, API'leri çağırmak için gerekli olan ortak kodu oluşturmak için Feign'de kullanılabilecek bir arayüzde tanımlayarak kolayca kurulabilir.
+
+   Service A - Feign İstemcisini kullanan Caller hizmeti.
+
+   Service B - API'si yukarıdaki Feign istemcisi tarafından çağrılacak olan Callee hizmeti
+
+@FeignClient(name = "service-B")   => Eureka client register olan ile aynı isme sahip olmalıdır
+public interface ServiceBInterface {
+   @RequestMapping("/objects/{id}", method=GET)
+   public ObjectOfServiceB getObjectById(@PathVariable("id") Long id);
+   @RequestMapping("/objects/", method=POST)
+   public void postInfo(ObjectOfServiceB b);
+   @RequestMapping("/objects/{id}", method=PUT)
+   public void postInfo((@PathVariable("id") Long id, ObjectOfBServiceB b);
+}

@@ -1,0 +1,38 @@
+NoSQL nedir?
+
+1- NoSQL tanımı?
+
+"NoSQL" terimi, ilişkisel olmayan veritabanı türlerini ifade eder ve bu veritabanları verileri ilişkisel tablolardan farklı bir formatta depolar. 
+Ancak, NoSQL veritabanları deyimsel dil API'leri, tanımlayıcı yapılandırılmış sorgu dilleri ve örneğe göre sorgulama dilleri kullanılarak sorgulanabilir. 
+Bu nedenle bunlara "sadece SQL" veritabanları değil" veritabanları değil" adı da verilir. 
+
+2- NoSQL veritabanı ne için kullanılır?
+
+NoSQL veritabanlarının temel avantajı yüksek ölçeklenebilirlik ve yüksek erişilebilirlik olduğundan bu veritabanları gerçek zamanlı web uygulamalarında ve 
+büyük veri alanında yaygın olarak kullanılmaktadır.
+
+NoSQL veritabanları, değişen gereksinimlere hızla uyum sağlayarak çevik bir geliştirme paradigmaya olanak tanıdığından geliştiricilerin de tercihidir.
+NoSQL veritabanları, verilerin daha sezgisel ve anlaşılması kolay veya verilerin uygulamalar tarafından kullanılma tarzına daha yakın bir şekilde depolanmasına olanak sağlar.
+NoSQL tarzı API'ler kullanıldığında verileri depolama veya alma sırasında daha az sayıda dönüşüm gerekir. 
+Ayrıca, NoSQL veritabanları buluttan tam olarak yararlanarak sıfır kapalı kalma süresi sağlayabilir. 
+ 
+
+3- SQL ve NoSQL karşılaştırması?
+
+SQL veritabanları ilişkiselken NoSQL veritabanları ilişkisel değildir. 
+İlişkisel veritabanı yönetim sistemi (RDBMS), kullanıcıların yüksek derecede yapılandırılmış tablolardaki verilere erişmesine ve verileri işlemesine olanak tanıyan 
+yapılandırılmış sorgu dilinin (SQL) temelini oluşturur. 
+Bu, MS SQL Server, IBM DB2, Oracle ve MySQL gibi veritabanı sistemleri için temel modeldir. 
+Ancak NoSQL veritabanlarında veri erişimi sözdizimi, veritabanından veritabanına farklılık gösterebilir. 
+
+
+4- NoSQL veritabanı ne zaman seçilmemelidir?
+
+NoSQL veritabanlarının bir başka özelliği de sorgu karmaşıklığıdır. 
+NoSQL veritabanları tek bir tabloya yönelik yapılan sorgularda olağanüstü şekilde çalışır. 
+Ancak, sorguların karmaşıklığı arttıkça ilişkisel veritabanları daha iyi bir seçim haline gelir. 
+NoSQL veritabanı genelde bir WHERE yantümcesinde sorgularda karmaşık birleştirmeler, alt sorgular ve iç içe yerleştirilmeler sunmaz.
+
+Ancak bazı durumlarda ilişkisel ve ilişkisel olmayan veritabanları arasında seçim yapmaya gerek olmaz. 
+Çoğu durumda şirketler, ilişkisel ve ilişkisel olmayan veri modellerinin bir kombinasyonunu kullanabilecekleri birleşik bir model sunan veritabanlarını tercih eder. 
+Bu hibrit yaklaşım, farklı veri türlerinin işlenmesinde daha fazla esneklik sunar ve aynı zamanda performansı olumsuz etkilemeden okuma ve yazma tutarlılığı sağlar.

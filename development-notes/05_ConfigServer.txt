@@ -1,0 +1,53 @@
+ConfigServer Nedir?
+Bütün konfigurasyonların tutacagımız yerdir.
+Spring Cloud Configuration Server, uygulamayla ilgili tüm konfigurasyonların özelliklerini yöneten merkezi bir yerdir.
+
+1- asagıdaki dependency eklenir 
+<dependency>
+   <groupId>org.springframework.cloud</groupId>
+   <artifactId>spring-cloud-config-server</artifactId>
+</dependency>
+
+2- Spring Boot uygulama sınıfı dosyanıza @EnableConfigServer anatasyonu tanımlanır.
+@EnableConfigServer anatasyonu, Spring Boot uygulamanızın bir konfigurasyonların Sunucusu gibi davranmasını sağlar.
+
+3-  Konfigürasyonu özellikler dosyanıza ekleyin ve application.properties dosyasını veya bootstrap.properties dosyasına değiştirin yada yml dosyası olarak kullanabiliriz
+# server port bilgisini verir
+server:
+  port: 8888
+
+# konfigurasyon dosyalarının nerede yonetecegi hakkında bilgi verir
+spring:
+  cloud:
+    config:
+      server:
+        composite:
+          type: composite
+        native:
+          search-locations: classpath:/config-repo
+
+  profiles:
+    active: native
+
+4- hangi modulün hangi yml dosyası oldugunu belirtmek için asagıdaki konfigurasyonu yazariz
+spring:
+  application:
+    name: account-service
+	
+5- normalde application.properties dosyası kullanılır ama config server konfigurasyonu kullanılırken bootstrap.yml  kullanılır. Çünkü config-server konfigurasyon
+dosyalarını bootstrap.yml dosyası üzerinden yönetir. moduller config-server dosyasını map leme yaparkende modullerde bootstrap.yml dosyasını kullanmaktadır.
+
+6- Diger modullerin konfigurasyon dosyalarını config-server konfigurasyon dosyalarının yonetildigi yeri gosterebilmek için yml dosyasına tanımlama yapmanız gerekmektedir.
+Tanımı ise;
+
+spring:
+  cloud:
+    config:
+      uri: http://localhost:8888						// server-config dosyasının bulundugu uri adres
+      profile: native
+
+
+7- spring-boot-starter-parent ve spring-cloud.version dikkat edin 
+yoksa
+If you are using the git profile, you need to set a Git URI in your configuration. If you have set spring.cloud.config.server.bootstrap=true, you need to use a composite configuration
+seklinde hata alirsiniz

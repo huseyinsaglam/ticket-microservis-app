@@ -1,0 +1,72 @@
+Spring Cloud Stream RabbitMQ
+
+================ Consume ================ 
+-  Binder => Mesajlaşma sistemine bağlı olarak, bu durumda RabbitMQ olan bir mesajlaşma platformu bağımlılığı belirtmemiz gerekecek.
+
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+</dependency>
+
+- Sink => Spring Cloud Stream'de, kuyruktan gelen mesajı tüketmek için havuz kullanılır. @StreamListener(target = Sink.INPUT) 
+
+
+@EnableBinding(Sink.class)          // kuyrugu dinleyen class ın anatasyonu olması gerekiyor
+public class NotificationDistributionService {
+
+    @StreamListener(Sink.INPUT)
+    public void onNotification(TicketNotification ticketNotification){
+        System.out.println("———————————————————————————————————————————");
+        System.out.println("Notification Alindi Kullanicilara gönderiliyor.");
+        System.out.println("Notification -> " + ticketNotification.toString());
+    }
+}
+
+application , yml dosyası
+spring:
+  rabbitmq:
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: msqueue
+
+================ Publish ================ 
+
+ Binder => Mesajlaşma sistemine bağlı olarak, bu durumda RabbitMQ olan bir mesajlaşma platformu bağımlılığı belirtmemiz gerekecek.
+Source => Bir mesajın yayınlanması gerektiğinde, Source kullanılarak yapılır. Kaynak, @Output ile açıklamalı bir yönteme sahip bir arabirimdir. 
+@Output notu, çıkış kanallarını tanımlamak için kullanılır.
+@EnableBinding anatasyonu, Spring Cloud Stream'e Denetleyiciyi bir ileti aracısına bağlamak istediğinizi söyler. 
+
+@Service
+@EnableBinding(Source.class)                // kuyruga yazan classın anatasyonu
+@RequiredArgsConstructor
+public class TicketNotificationServiceImpl implements TicketNotificationService {
+
+    private final Source source;
+
+    @Override
+    public void sendToQueue(Ticket ticket) {
+
+        TicketNotification ticketNotification =new TicketNotification();
+        ticketNotification.setAccountId(ticket.getAssignee());
+        ticketNotification.setTicketId(ticket.getId());
+        ticketNotification.setTicketDescription(ticket.getDescription());
+
+        source.output().send(MessageBuilder.withPayload(ticketNotification).build());
+    }
+}
+
+application , yml dosyası
+spring:
+  rabbitmq:
+    username: guest
+    password: guest
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination: msqueue
+=====================================================================================================

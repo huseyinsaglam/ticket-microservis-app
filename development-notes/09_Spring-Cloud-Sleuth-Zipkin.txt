@@ -1,0 +1,95 @@
+Spring Cloud Sleuth / Zipkin-server 
+Spring Sleuth, herhangi bir uygulamada birden fazla servisten oluşan bir sistemdeki logları geliştirmek için kullanılan çok güçlü bir araçtır.
+Genellikle loglama mekanizması kullanılsa dahi tek bir request oluşturmak için arkada yapılan işlemlerin birbiriyle olan log ilişkilendirmesini yapmak zordur.
+Bir hata oluştuğu zaman, bu karmaşık işlemlerin içinde hatayı bulmak, çok zor ve hatta bazen imkansız bir hale gelebiliyor.
+İşte bu karmaşıklığa çözüm olarak Spring Sleuth kütüphanesi kullanılmaktadır. 
+Sleuth kütüphanesi, requestler, threadler veya joblar için logların takip edilmesini mümkün kılar.
+Trace/iz/ipucu/çizmek/tasarlamak, bir uygulamada tek bir request veya tetiklenen bir job gibi düşünülebilir. 
+Bu yapıda bir requestteki tüm adımlar aynı traceId’ye sahip olacaktır.
+
+Spring Sleuth’un eklediği temel bilgilerdir
+[applicationName, traceId, spanId, export]
+ApplicationName — application.properties dosyasında belirlediğimiz isimlendirmedir. 
+Aynı uygulamanın birden çok instance’ından logları toplamak, birleştirmek için kullanılabilir.
+
+TraceId — TraceId tek bir request, job veya action için atanan bir id’dir.
+ Örnek olarak, her bir kullanıcı tarafından başlatılan web isteğine karşılık gelecektir.
+ 
+ SpanId — Tek bir iş birimini izler. Birden çok adımdan oluşan bir istek düşünüldüğünde, her adımın kendine ait bir spanId’si vardır.
+ Varsayılan olarak, herhangi bir uygulama akışı aynı traceId ve spanId ile başlayacaktır.
+ 
+ Export — Bu özellik, bu log kaydının Zipkin gibi bir log toplayıcı mekanizmaya aktarılıp aktarılmadığını gösterir. 
+ Zipkin, Sleuth tarafından oluşturulan logların analizinde önemli rol oynamaktadır. Bu konu daha sonra detaylı olarak incelenecektir.
+ 
+ Kodlama
+ 1- dependency olarak asagidaki ekleme yapilir
+ 
+     <dependencies>
+	 # server kismi icin kullanilir
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <!-- tomcat dahil etme dedik cunku zipkin defaultta  undertow web application server kullaniyor.-->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.java</groupId>
+            <artifactId>zipkin-server</artifactId>
+            <version>2.11.7</version>
+        </dependency>
+		
+		# ui gorsel icin kullanilir
+        <dependency>
+            <groupId>io.zipkin.java</groupId>
+            <artifactId>zipkin-autoconfigure-ui</artifactId>
+            <version>2.11.7</version>
+        </dependency>
+    </dependencies>
+	
+2- 
+
+@SpringBootApplication
+@EnableZipkinServer					// zipkin uygulama icin ekleme injection yetenegini verdik
+public class ZipkinServerApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ZipkinServerApplication.class, args);
+    }
+
+} 
+
+3- application.properties kisma 
+# default adresi 9411 dir
+server.port=9411
+
+4- Loglanmasini istedigimiz moduller servislerin pom.xml dosyasına asagidaki bagimliligi eklemeliyiz.
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-zipkin</artifactId>
+        </dependency>
+		
+5- Loglanmasini istedigimiz moduller servislerin konfigurasyon dosyasına
+
+# buradaki konfigurasyon dosyasini enjecte etmeliyiz.
+spring:
+  zipkin:
+    base-url: http://localhost:9411/
+	
+	
+6- Uygulama ise http://localhost:9411/zipkin/  ayaga kalkip kalmadigini gorebilirsiniz.
+
+7- Zipkin ; Spring Boot org.springframework.boot versiyonların bir kisminda problem cikarmaktadir.
+Eski versiyonlardan 2.0.7.RELEASE versiyonlardan bir kismindan sikinti cikarmamaktadir
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.0.7.RELEASE</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+	
